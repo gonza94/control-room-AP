@@ -211,8 +211,8 @@ b4 = -1.0*(trMtrx_4_to_5.get(2,2)*trMtrx_1_to_4.get(2,3)*b1*length_1+trMtrx_4_to
 b5 = (-1.0/length_5)*(trMtrx_4_to_5.get(3,2)*trMtrx_1_to_4.get(2,3)*b1*length_1+trMtrx_4_to_5.get(3,3)*trMtrx_1_to_4.get(3,3)*b1*length_1+trMtrx_4_to_5.get(3,3)*b4*length_4)
 
 # Set correctors to solution
-dcv_field_pv_arr[1].put(0)
-dcv_field_pv_arr[2].put(0)
+dcv_field_pv_arr[1].put(b4)
+dcv_field_pv_arr[2].put(b5)
 
 time.sleep(2.1)
 

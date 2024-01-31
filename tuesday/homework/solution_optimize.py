@@ -36,7 +36,7 @@ for bpm_pv in bpm_ver_pos_pv_arr:
 print ("=================================")
 
 #---- set DCV01 t0 field 0.05 [T]
-dcv01_field = 0.05
+dcv01_field = 0.01
 dcv_field_pv_arr[0].put(dcv01_field)
 
 #---- give the accelerator time to put beam through MEBT
