@@ -3,6 +3,7 @@ This script is to help you with the orbit correction project. It sets up the PyO
 You will need the results from the virtual accelerator part for this to work.
 """
 import os
+import numpy as np
 
 from orbit.py_linac.linac_parsers import SNS_LinacLatticeFactory
 
@@ -73,6 +74,9 @@ CCL_DC = {
 'CCL_Mag:DCV409' : -1.1244190854161349e-06, 
 'CCL_Mag:DCV411' : -1.0425089033856137e-05}
 
+lsqHcorrs = np.loadtxt('lsq_corrs.txt')
+CCL_DC = dict(zip(CCL_DC.keys(), lsqHcorrs))  
+
 CCL_correctors = {}
 quads = accLattice.getQuads()
 for quad in quads:
@@ -81,6 +85,25 @@ for quad in quads:
         name = child_node.getName()
         if 'DC' in name and 'CCL' in name:
             CCL_correctors[name] = child_node
+
+
+BPM_DC=['CCL_Diag:BPM101',
+'CCL_Diag:BPM103',
+'CCL_Diag:BPM112',
+'CCL_Diag:BPM202',
+'CCL_Diag:BPM212',
+'CCL_Diag:BPM302',
+'CCL_Diag:BPM312',
+'CCL_Diag:BPM402',
+'CCL_Diag:BPM409',
+'CCL_Diag:BPM411']
+
+bpm_pos = []
+
+for name in BPM_DC:
+    bpmi = accLattice.getNodeForName(name)
+    si=bpmi.getPosition()
+    bpm_pos.append(si)
 
 # Load bunch from file. This bunch is designed to enter the MEBT.
 bunch_file = os.environ["HOME"] + "/uspas24-CR/lattice/MEBT_in.dat"
@@ -113,7 +136,6 @@ my_params = {'old_pos': -1.0, 'count': 0, 'pos_step': 0.1}
 
 # Import AccActionsContainer, a method to add functionality throughout the accelerator.
 from orbit.lattice import AccActionsContainer
-import numpy as np
 from matplotlib import pyplot as plt
 pos_array = []
 x_array = []
@@ -122,10 +144,13 @@ y_array = []
 my_container = AccActionsContainer("Bunch Tracking")
 pos_start = 0.0
 
+bpm_pos2 = []
+
 # Here is the action function for you to fill in with your calculations.
 def action_entrance(paramsDict):
     node = paramsDict["node"]
     print(node.getName())
+
     bunch = paramsDict["bunch"]
     pos = paramsDict["path_length"]
 
@@ -133,6 +158,9 @@ def action_entrance(paramsDict):
         return
     if paramsDict["old_pos"] + paramsDict["pos_step"] > pos:
         return
+
+    if node.getName()[5:-8] in BPM_DC:
+        bpm_pos2.append([node.getName()[5:-8],float(pos)])
 
     paramsDict["old_pos"] = pos
     paramsDict["count"] += 1
@@ -174,7 +202,7 @@ x_array = np.array(x_array)
 #num_of_parts = bunch.getSizeGlobal()
 #for n in range(num_of_parts):
 plt.plot(pos_array, x_array)
-plt.title('Before Correction')
+plt.title('After Correction')
 plt.xlabel('Lattice position [m]')
 plt.ylabel('Horizontal Position [mm]')
 #plt.legend()

@@ -182,8 +182,8 @@ lbs = -0.001*np.ones_like(dbxsvd)
 ubs = 0.001*np.ones_like(dbxsvd)
 resx = lsq_linear(hmat, -xnew, bounds = (lbs,ubs))
 
-lbs = -0.0001*np.ones_like(dbysvd)
-ubs = 0.0001*np.ones_like(dbysvd)
+lbs = -0.003*np.ones_like(dbysvd)
+ubs = 0.003*np.ones_like(dbysvd)
 resy = lsq_linear(vmat, -ynew, bounds = (lbs,ubs))
 
 # -------------------------------------------------------
